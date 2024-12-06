@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(chatRoutes);
 
 // Conectar ao MongoDB
-mongoose.connect('mongodb://localhost/whatsapp-chat', {
+mongoose.connect('mongodb://localhost:27017/whatsapp-chat', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => console.log('MongoDB Connected'))
