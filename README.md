@@ -62,8 +62,10 @@ client.on('message', message => {
     mentionedIds: message.mentionedIds,  // Contatos mencionados
   });
 });
+```
 
-### Estrutura de Pastas:
+### ESTRUTURA DE PASTA
+```plain
 project/
 ├── src/
 │   ├── config/               # Configurações gerais (ex.: variáveis de ambiente, conexões)
@@ -81,3 +83,4 @@ project/
 ├── .gitignore                # Arquivos/locais a serem ignorados pelo Git
 ├── package.json              # Dependências e scripts do Node.js
 └── README.md                 # Documentação do projeto
+```
