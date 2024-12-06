@@ -1,44 +1,58 @@
+// src/server.js
 const express = require('express');
 const mongoose = require('mongoose');
-const {client} = require('whatsapp-web.js');
+const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const bodyParser = require('body-parser');
+const chatRoutes = require('./routes/chatRoutes');
+const ChatController = require('./controllers/chatController');
 
 const app = express();
-const PORT = processo.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-// conectar ao mongoose
+app.use(bodyParser.json());
+app.use(chatRoutes);
 
+// Conectar ao MongoDB
 mongoose.connect('mongodb://localhost/whatsapp-chat', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log('MongoDB connection error:', err));
 
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(() => console.log('mongoDB Connected'))
-.catch (err => console.log('mongoDB connection error:', err));
-
-// iniciar cliente whatsapp web
-
-const client = new client();
+// Iniciar o cliente WhatsApp Web
+const client = new Client();
 
 client.on('qr', (qr) => {
-    qrcode.generate(qr, {small: true});
+  qrcode.generate(qr, { small: true });
 });
 
 client.on('ready', () => {
-    console.log('whatsapp web is ready!');
+  console.log('WhatsApp Web is ready!');
 });
 
 client.on('message', async (message) => {
-    // Lógica para processar mensagens
-    console.log('Received message:', message.body);
-    // Aqui, você pode armazenar as mensagens no MongoDB ou realizar outra lógica
+  // Lógica para encontrar ou criar uma conversa
+  const participants = [message.from, message.to];
+  let chat = await ChatController.findChatByParticipants(participants);
+
+  if (!chat) {
+    // Se não encontrar, cria uma nova conversa
+    chat = await ChatController.createChat({
+      participants,
+      leadName: message.from === 'seu_numero' ? 'Lead' : 'Você',
+    });
+  }
+
+  // Adiciona a mensagem ao banco de dados
+  ChatController.addMessageToChat(chat._id, {
+    sender: message.from,
+    content: message.body,
+    timestamp: message.timestamp,
   });
-
-  client.initialize();
-
-// Rota para teste
-app.get('/', (req, res) => {
-  res.send('WhatsApp Chat System');
 });
+
+client.initialize();
 
 // Start the server
 app.listen(PORT, () => {
