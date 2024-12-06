@@ -14,11 +14,13 @@ app.use(bodyParser.json());
 app.use(chatRoutes);
 
 // Conectar ao MongoDB
-mongoose.connect('mongodb://localhost:27017/whatsapp-chat', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log('MongoDB connection error:', err));
+mongoose.connect('mongodb://localhost:27017/maluHubDB')
+  .then(() => {
+    console.log("Conexão com o MongoDB bem-sucedida!");
+  })
+  .catch(err => {
+    console.error("Erro ao conectar com o MongoDB:", err);
+  });
 
 // Iniciar o cliente WhatsApp Web
 const client = new Client();
