@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
 
-const messageSchema = new mongoose.Schema({
+// Definindo o schema
+const chatSchema = new mongoose.Schema({
+  participants: [String], // Array de participantes (usuários)
+  messages: [{
     sender: String,
-    content: String,
-    timestamp: { type: Date, default: Date.now}
+    message: String,
+    timestamp: { type: Date, default: Date.now },
+  }],
 });
 
-const Chat = mongoose.model('chat', chatSchema);
+// Criando o modelo
+const Chat = mongoose.model('Chat', chatSchema);
 
-module.exports = chat;
+module.exports = Chat;

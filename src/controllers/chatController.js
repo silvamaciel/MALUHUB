@@ -38,5 +38,13 @@ const addMessageToChat = async (chatId, message) => {
     }
 };
 
-module.exports = {createChat, getActiveChats, addMessageToChat};
+const findChatByParticipants = async (participants) => {
+    try {
+      return await Chat.findOne({ participants });
+    } catch (error) {
+      console.error('Erro ao buscar chat:', error);
+    }
+  };
+
+module.exports = {createChat, getActiveChats, addMessageToChat, findChatByParticipants};
 
