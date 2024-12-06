@@ -1,13 +1,27 @@
+// src/routes/chatRoutes.js
 const express = require('express');
-
-const { createChat, getActiveChats} = require ('../controllers/chatController');
-
 const router = express.Router();
+const ChatController = require('../controllers/chatController');
 
-// rota para criar nova conversa
+// Exemplo de rota GET para listar chats
+router.get('/', async (req, res) => {
+  try {
+    const chats = await ChatController.getAllChats(); // Exemplo de método para buscar todos os chats
+    res.status(200).json(chats);
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao buscar chats', error: err });
+  }
+});
 
-router.post('/chats', createChat);
-
-router.get('/chats/active', getActiveChats)
+// Exemplo de rota POST para criar um chat
+router.post('/', async (req, res) => {
+  try {
+    const { participants, leadName } = req.body;
+    const newChat = await ChatController.createChat({ participants, leadName });
+    res.status(201).json(newChat);
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao criar chat', error: err });
+  }
+});
 
 module.exports = router;

@@ -9,9 +9,10 @@ const ChatController = require('./controllers/chatController'); // Certifique-se
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//analisar o corpo da requisição
-app.use(express.json()); //
+// Use o middleware express.json() para analisar o corpo da requisição
+app.use(express.json()); // Aqui, substituímos bodyParser.json() pelo express.json()
 
+// Use as rotas de chat
 app.use('/chat', chatRoutes);
 
 // Conectar ao MongoDB
@@ -35,23 +36,33 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
-  // Lógica para encontrar ou criar uma conversa
-  const participants = [message.from, message.to];
+    console.log('Mensagem recebida:', {
+        body: message.body, // Exibe o conteúdo da mensagem
+        type: message.type, // Exibe o tipo da mensagem
+        timestamp: message.timestamp, // Exibe o timestamp
+      });
+
+  const participants = [message.from, message.to]; 
   let chat = await ChatController.findChatByParticipants(participants);
 
   if (!chat) {
     // Se não encontrar, cria uma nova conversa
+    const leadName = message.from === 'seu_numero' ? 'Lead' : 'Você'; 
     chat = await ChatController.createChat({
       participants,
-      leadName: message.from === 'seu_numero' ? 'Lead' : 'Você',
+      leadName,
     });
   }
 
+  // Formatando o timestamp corretamente
+  const timestamp = new Date(message.timestamp * 1000);
+  console.log('timestamp formatado:', timestamp);
+
   // Adiciona a mensagem ao banco de dados
-  ChatController.addMessageToChat(chat._id, {
+  await ChatController.addMessageToChat(chat._id, {
     sender: message.from,
     content: message.body,
-    timestamp: message.timestamp,
+    timestamp: timestamp, // Passando o timestamp já formatado
   });
 });
 
