@@ -3,15 +3,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const bodyParser = require('body-parser');
-const chatRoutes = require('./routes/chatRoutes');
-const ChatController = require('./controllers/chatController');
+const chatRoutes = require('./routes/chatRoutes'); // Certifique-se de que está correto
+const ChatController = require('./controllers/chatController'); // Certifique-se de que está correto
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
-app.use(chatRoutes);
+//analisar o corpo da requisição
+app.use(express.json()); //
+
+app.use('/chat', chatRoutes);
 
 // Conectar ao MongoDB
 mongoose.connect('mongodb://localhost:27017/maluHubDB')
@@ -56,7 +57,7 @@ client.on('message', async (message) => {
 
 client.initialize();
 
-// Start the server
+// Iniciar o servidor
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
